@@ -1,0 +1,135 @@
+
+# AIRLINE FLIGHT PRICE ANALYSIS
+# Author: Chaitali Shelake
+# GitHub: chaitalishelake
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import os
+
+print("=" * 55)
+print("       AIRLINE FLIGHT PRICE ANALYSIS")
+print("       Developed by Chaitali Shelake")
+print("=" * 55)
+
+# 1. Load Dataset
+file_name = "airlines_flights_data.csv"
+
+if not os.path.exists(file_name):
+    print("\nDataset not found!")
+    print("Please download airlines_flights_data.csv")
+    print("and place it in the same folder as this Python file.")
+    raise SystemExit
+
+df = pd.read_csv(file_name)
+
+# 2. Display Dataset
+print("\nFIRST FIVE RECORDS")
+print(df.head())
+
+# 3. Dataset Information
+print("\nDATASET SHAPE")
+print(df.shape)
+
+print("\nCOLUMN NAMES")
+print(df.columns.tolist())
+
+print("\nDATASET INFORMATION")
+print(df.info())
+
+# 4. Missing Values
+print("\nMISSING VALUES")
+print(df.isnull().sum())
+
+# 5. Statistical Summary
+print("\nSTATISTICAL SUMMARY")
+print(df.describe())
+
+# 6. Airline Analysis
+print("\nAVAILABLE AIRLINES")
+print(df["airline"].unique())
+
+print("\nFLIGHTS PER AIRLINE")
+print(df["airline"].value_counts())
+
+# 7. Average Flight Price
+print("\nAVERAGE FLIGHT PRICE")
+print(round(df["price"].mean(), 2))
+
+# 8. Average Price by Airline
+airline_prices = df.groupby("airline")["price"].mean()
+print("\nAVERAGE PRICE BY AIRLINE")
+print(airline_prices.sort_values(ascending=False))
+
+# 9. Average Price by Class
+print("\nAVERAGE PRICE BY CLASS")
+print(df.groupby("class")["price"].mean())
+
+# 10. Visualizations
+sns.set_theme(style="whitegrid")
+
+# Chart 1: Flights by Airline
+plt.figure(figsize=(9, 5))
+sns.countplot(data=df, x="airline", order=df["airline"].value_counts().index)
+plt.title("Number of Flights by Airline")
+plt.xlabel("Airline")
+plt.ylabel("Number of Flights")
+plt.xticks(rotation=30)
+plt.tight_layout()
+plt.savefig("airline_count.png")
+plt.show()
+
+# Chart 2: Average Price by Airline
+plt.figure(figsize=(9, 5))
+sns.barplot(x=airline_prices.index, y=airline_prices.values)
+plt.title("Average Flight Price by Airline")
+plt.xlabel("Airline")
+plt.ylabel("Average Price (INR)")
+plt.xticks(rotation=30)
+plt.tight_layout()
+plt.savefig("average_price.png")
+plt.show()
+
+# Chart 3: Price by Class
+plt.figure(figsize=(8, 5))
+sns.boxplot(data=df, x="class", y="price")
+plt.title("Flight Price Comparison by Class")
+plt.xlabel("Travel Class")
+plt.ylabel("Price (INR)")
+plt.tight_layout()
+plt.savefig("class_comparison.png")
+plt.show()
+
+# Chart 4: Price vs Days Left
+plt.figure(figsize=(9, 5))
+sns.scatterplot(data=df.sample(min(3000, len(df)), random_state=42),
+                x="days_left", y="price", alpha=0.5)
+plt.title("Flight Price vs Days Left")
+plt.xlabel("Days Left Before Departure")
+plt.ylabel("Price (INR)")
+plt.tight_layout()
+plt.savefig("price_days_left.png")
+plt.show()
+
+# 11. Correlation Analysis
+numeric_df = df.select_dtypes(include="number")
+
+plt.figure(figsize=(9, 6))
+sns.heatmap(numeric_df.corr(), annot=True, cmap="coolwarm", fmt=".2f")
+plt.title("Correlation Heatmap")
+plt.tight_layout()
+plt.savefig("correlation_heatmap.png")
+plt.show()
+
+# 12. Final Results
+print("\n" + "=" * 55)
+print("              PROJECT COMPLETED")
+print("=" * 55)
+print("Total Flights:", len(df))
+print("Total Airlines:", df["airline"].nunique())
+print("Average Ticket Price: ₹", round(df["price"].mean(), 2))
+print("Minimum Ticket Price: ₹", df["price"].min())
+print("Maximum Ticket Price: ₹", df["price"].max())
+
+print("\nAll analysis charts have been saved successfully!")
